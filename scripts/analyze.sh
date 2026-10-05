@@ -104,9 +104,12 @@ if [[ -n "$OUTPUT" ]]; then
     exec > "$OUTPUT"
 fi
 
-echo "RISC-V Log Analyzer"
-echo "Log file: $LOG_FILE"
-echo ""
+# Print the normal header only for text output.
+if [[ "$FORMAT" == "text" ]]; then
+    echo "RISC-V Log Analyzer"
+    echo "Log file: $LOG_FILE"
+    echo ""
+fi
 
 # Count test results from TEST PASS, TEST FAIL, and TEST SKIP lines.
 PASSED=$(grep -c "TEST PASS:" "$LOG_FILE" || true)
