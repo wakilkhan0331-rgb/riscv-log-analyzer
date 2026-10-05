@@ -1,6 +1,6 @@
 # RISC-V Log Analyzer
 
-A Bash-based tool for analyzing RISC-V simulation logs.
+A Bash-based tool for analyzing and summarizing RISC-V simulation logs.
 
 ## Features
 
