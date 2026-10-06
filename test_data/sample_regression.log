@@ -1,10 +1,10 @@
-[2026-05-01 10:40:00] TEST START: rv32i-add
-[2026-05-01 10:40:01] TEST PASS: rv32i-add (0.82s)
-[2026-05-01 10:40:01] TEST START: rv32i-sub
-[2026-05-01 10:40:02] TEST FAIL: rv32i-sub (0.65s)
-[2026-05-01 10:40:02] ERROR: Arithmetic mismatch
-[2026-05-01 10:40:02] TEST START: rv32i-sll
-[2026-05-01 10:40:03] TEST PASS: rv32i-sll (1.02s)
-[2026-05-01 10:40:03] TEST START: rv32i-srl
-[2026-05-01 10:40:04] TEST PASS: rv32i-srl (0.54s)
-[2026-05-01 10:40:04] SUMMARY: 4 tests, 3 passed, 1 failed, 0 skipped
+[2026-10-06 10:40:00] TEST START: rv32i-add
+[2026-10-06 10:40:01] TEST PASS: rv32i-add (0.82s)
+[2026-10-06 10:40:01] TEST START: rv32i-sub
+[2026-10-06 10:40:02] TEST FAIL: rv32i-sub (0.65s)
+[2026-10-06 10:40:02] ERROR: Arithmetic mismatch
+[2026-10-06 10:40:02] TEST START: rv32i-sll
+[2026-10-06 10:40:03] TEST PASS: rv32i-sll (1.02s)
+[2026-10-06 10:40:03] TEST START: rv32i-srl
+[2026-10-06 10:40:04] TEST PASS: rv32i-srl (0.54s)
+[2026-10-06 10:40:04] SUMMARY: 4 tests, 3 passed, 1 failed, 0 skipped
