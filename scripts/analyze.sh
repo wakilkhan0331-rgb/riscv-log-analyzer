@@ -53,6 +53,10 @@ show_regressions() {
 
     echo "Total regressions: $regressions"
 }
+# ANSI colors for PASS and FAIL output.
+GREEN=$'\033[0;32m'
+RED=$'\033[0;31m'
+RESET=$'\033[0m'
 FORMAT="text"
 OUTPUT=""
 VERBOSE=false
@@ -228,11 +232,11 @@ if [[ -n "$COMPARE_FILE" ]]; then
 fi
     # Return the required exit status in CSV mode.
     if [[ "$FAILED" -eq 0 ]]; then
-        echo "verdict,PASS"
+        echo -e "${GREEN}VERDICT: PASS${RESET}"
         echo "exit_code,0"
         exit 0
     else
-        echo "verdict,FAIL"
+        echo -e "${RED}VERDICT: FAIL${RESET}"
         echo "exit_code,1"
         exit 1
     fi
@@ -240,8 +244,8 @@ fi
 
 echo "--- Results Summary ---"
 echo "Total tests: $TOTAL"
-echo "Passed:      $PASSED"
-echo "Failed:      $FAILED"
+echo -e "Passed:      ${GREEN}${PASSED}${RESET}"
+echo -e "Failed:      ${RED}${FAILED}${RESET}"
 echo "Skipped:     $SKIPPED"
 echo "Pass rate:   ${PASS_RATE}%"
 # Extract and display the name of every failed test.
