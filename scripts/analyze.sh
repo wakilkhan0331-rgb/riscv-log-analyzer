@@ -11,12 +11,14 @@ Options:
   --format [text|csv]   Output format (default: text)
   --output <path>       Save output to a file
   --verbose              Show detailed processing information
+  --compare <log_file>   Compare results with another log
   --help                 Show this help message
 
 Examples:
   $0 test_data/sample_pass.log
   $0 test_data/sample_fail.log --format csv
   $0 test_data/sample_sim.log --output output/result.txt
+  $0 test_data/sample_pass.log --compare test_data/sample_regression.log
 EOF
 }
 
@@ -26,11 +28,36 @@ error_exit() {
     exit 2
 }
 
-# Default settings
+# Find tests that passed before but fail in the comparison log.
+show_regressions() {
+    local old_log="$1"
+    local new_log="$2"
+    local regressions=0
+
+    echo ""
+    echo "--- Regressions ---"
+
+    while read -r test_name; do
+        if grep -q "TEST PASS: $test_name " "$old_log" &&
+           grep -q "TEST FAIL: $test_name " "$new_log"; then
+            echo "$test_name: PASS -> FAIL"
+            regressions=$((regressions + 1))
+        fi
+    done < <(
+        sed -n 's/.*TEST PASS: \([^ ]*\).*/\1/p' "$old_log" | sort -u
+    )
+
+    if [[ "$regressions" -eq 0 ]]; then
+        echo "None"
+    fi
+
+    echo "Total regressions: $regressions"
+}
 FORMAT="text"
 OUTPUT=""
 VERBOSE=false
 LOG_FILE=""
+COMPARE_FILE=""
 
 # Show help if requested alone.
 if [[ $# -eq 1 && "$1" == "--help" ]]; then
@@ -67,6 +94,11 @@ while [[ $# -gt 0 ]]; do
             VERBOSE=true
             shift
             ;;
+        --compare)
+            [[ $# -ge 2 ]] || error_exit "Missing value for --compare."
+            COMPARE_FILE="$2"
+            shift 2
+            ;;
 
         --help)
             show_help
@@ -92,7 +124,16 @@ fi
 if [[ ! -r "$LOG_FILE" ]]; then
     error_exit "Log file is not readable: $LOG_FILE"
 fi
+# Validate the comparison log when --compare is used.
+if [[ -n "$COMPARE_FILE" ]]; then
+    if [[ ! -f "$COMPARE_FILE" ]]; then
+        error_exit "Comparison log not found: $COMPARE_FILE"
+    fi
 
+    if [[ ! -r "$COMPARE_FILE" ]]; then
+        error_exit "Comparison log is not readable: $COMPARE_FILE"
+    fi
+fi
 # Verbose information goes to stderr so it does not affect analysis output.
 if [[ "$VERBOSE" == true ]]; then
     echo "Reading log file: $LOG_FILE" >&2
@@ -181,6 +222,10 @@ if [[ "$FORMAT" == "csv" ]]; then
     }
     ' "$LOG_FILE"
 
+# Compare with another log when --compare is provided.
+if [[ -n "$COMPARE_FILE" ]]; then
+    show_regressions "$LOG_FILE" "$COMPARE_FILE"
+fi
     # Return the required exit status in CSV mode.
     if [[ "$FAILED" -eq 0 ]]; then
         echo "verdict,PASS"
@@ -260,6 +305,17 @@ END {
 echo ""
 
 # Return success only when no tests failed.
+if [[ -n "$COMPARE_FILE" ]]; then
+    show_regressions "$LOG_FILE" "$COMPARE_FILE"
+fi
+
+if [[ "$FAILED" -eq 0 ]]; then
+    echo "--- Verdict: PASS ---"
+    exit 0
+else
+    echo "--- Verdict: FAIL ---"
+    exit 1
+fi
 if [[ "$FAILED" -eq 0 ]]; then
     echo "--- Verdict: PASS ---"
     echo "Exit code: 0"
